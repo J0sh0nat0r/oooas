@@ -44,4 +44,13 @@ class Arr
 
         return $array;
     }
+
+    /**
+     * @param mixed $value
+     * @return array
+     */
+    public static function wrap($value): array
+    {
+        return is_array($value) ? $value : [$value];
+    }
 }

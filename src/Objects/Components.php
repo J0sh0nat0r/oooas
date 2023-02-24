@@ -16,6 +16,8 @@ use GoldSpecDigital\ObjectOrientedOAS\Utilities\Arr;
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\Header[]|null $headers
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\SecurityScheme[]|null $securitySchemes
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\Link[]|null $links
+ * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[]|null $callbacks
+ * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[]|null $pathItems
  */
 class Components extends BaseObject
 {
@@ -63,6 +65,11 @@ class Components extends BaseObject
      * @var \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[]|null
      */
     protected $callbacks;
+
+    /**
+     * @var \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[]|null
+     */
+    protected $pathItems;
 
     /**
      * @param \GoldSpecDigital\ObjectOrientedOAS\Contracts\SchemaContract[] $schemas
@@ -182,6 +189,19 @@ class Components extends BaseObject
     }
 
     /**
+     * @param \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[] $pathItems
+     * @return static
+     */
+    public function pathItems(PathItem ...$pathItems): self
+    {
+        $instance = clone $this;
+
+        $instance->pathItems = $pathItems ?: null;
+
+        return $instance;
+    }
+
+    /**
      * @return array
      */
     protected function generate(): array
@@ -231,6 +251,11 @@ class Components extends BaseObject
             $callbacks[$callback->objectId][$callback->route] = $callback;
         }
 
+        $pathItems = [];
+        foreach ($this->pathItems ?? [] as $pathItem) {
+            $pathItems[$pathItem->objectId] = $pathItem;
+        }
+
         return Arr::filter([
             'schemas' => $schemas ?: null,
             'responses' => $responses ?: null,
@@ -241,6 +266,7 @@ class Components extends BaseObject
             'securitySchemes' => $securitySchemes ?: null,
             'links' => $links ?: null,
             'callbacks' => $callbacks ?: null,
+            'pathItems' => $pathItems ?: null,
         ]);
     }
     
@@ -255,6 +281,7 @@ class Components extends BaseObject
             ->headers(...($properties['headers'] ?? []))
             ->securitySchemes(...($properties['securitySchemes'] ?? []))
             ->links(...($properties['links'] ?? []))
-            ->callbacks(...($properties['callbacks'] ?? []));
+            ->callbacks(...($properties['callbacks'] ?? []))
+            ->pathItems(...($properties['pathItems'] ?? []));
     }
 }
