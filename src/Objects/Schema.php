@@ -46,6 +46,7 @@ class Schema extends BaseObject implements SchemaContract
     const TYPE_ARRAY = 'array';
     const TYPE_BOOLEAN = 'boolean';
     const TYPE_INTEGER = 'integer';
+    const TYPE_NULL = 'null';
     const TYPE_NUMBER = 'number';
     const TYPE_OBJECT = 'object';
     const TYPE_STRING = 'string';
