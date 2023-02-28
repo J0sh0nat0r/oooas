@@ -8,6 +8,7 @@ use GoldSpecDigital\ObjectOrientedOAS\Utilities\Arr;
 
 /**
  * @property string|null $name
+ * @property string|null $identifier
  * @property string|null $url
  */
 class License extends BaseObject
@@ -16,6 +17,11 @@ class License extends BaseObject
      * @var string|null
      */
     protected $name;
+
+    /**
+     * @var string|null
+     */
+    protected $identifier;
 
     /**
      * @var string|null
@@ -31,6 +37,19 @@ class License extends BaseObject
         $instance = clone $this;
 
         $instance->name = $name;
+
+        return $instance;
+    }
+
+    /**
+     * @param string|null $identifier
+     * @return static
+     */
+    public function identifier(?string $identifier): self
+    {
+        $instance = clone $this;
+
+        $instance->identifier = $identifier;
 
         return $instance;
     }
@@ -55,6 +74,7 @@ class License extends BaseObject
     {
         return Arr::filter([
             'name' => $this->name,
+            'identifier' => $this->identifier,
             'url' => $this->url,
         ]);
     }
@@ -63,6 +83,7 @@ class License extends BaseObject
     {
         return parent::__set_state($properties)
             ->name($properties['name'])
+            ->identifier($properties['identifier'])
             ->url($properties['url']);
     }
 }

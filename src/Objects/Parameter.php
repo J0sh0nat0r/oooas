@@ -355,6 +355,5 @@ class Parameter extends BaseObject
             ->example($properties['example'])
             ->examples(...$properties['examples'] ?? [])
             ->content(...$properties['content'] ?? []);
-
     }
 }

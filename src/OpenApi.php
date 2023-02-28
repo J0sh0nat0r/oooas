@@ -22,6 +22,7 @@ use JsonSchema\Validator;
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\Info|null $info
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\Server[]|null $servers
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[]|null $paths
+ * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[]|null $webhooks
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\Components|null $components
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\SecurityRequirement[]|null $security
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\Tag[]|null $tags
@@ -32,6 +33,7 @@ class OpenApi extends BaseObject
     const OPENAPI_3_0_0 = '3.0.0';
     const OPENAPI_3_0_1 = '3.0.1';
     const OPENAPI_3_0_2 = '3.0.2';
+    const OPENAPI_3_1_0 = '3.1.0';
 
     /**
      * @var string|null
@@ -52,6 +54,11 @@ class OpenApi extends BaseObject
      * @var \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[]|null
      */
     protected $paths;
+
+    /**
+     * @var \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[]|null
+     */
+    protected $webhooks;
 
     /**
      * @var \GoldSpecDigital\ObjectOrientedOAS\Objects\Components|null
@@ -126,6 +133,19 @@ class OpenApi extends BaseObject
     }
 
     /**
+     * @param \GoldSpecDigital\ObjectOrientedOAS\Objects\PathItem[] $webhooks
+     * @return static
+     */
+    public function webhooks(PathItem ...$webhooks): self
+    {
+        $instance = clone $this;
+
+        $instance->webhooks = $webhooks ?: null;
+
+        return $instance;
+    }
+
+    /**
      * @param \GoldSpecDigital\ObjectOrientedOAS\Objects\Components|null $components
      * @return static
      */
@@ -188,10 +208,14 @@ class OpenApi extends BaseObject
 
         $data = BaseConstraint::arrayToObjectRecursive($this->generate());
 
+        $schemaFile = $this->openapi === self::OPENAPI_3_1_0
+            ? '3.1'
+            : '3.0';
+
         $schema = file_get_contents(
-            realpath(__DIR__ . '/../schemas/v3.0.json')
+            dirname(__DIR__) . "/schemas/v$schemaFile.json"
         );
-        $schema = json_decode($schema);
+        $schema = json_decode($schema, false);
 
         $validator = new Validator();
         $validator->validate($data, $schema);
@@ -211,11 +235,17 @@ class OpenApi extends BaseObject
             $paths[$path->route] = $path;
         }
 
+        $webhooks = [];
+        foreach ($this->webhooks ?? [] as $webhook) {
+            $webhooks[$webhook->objectId] = $webhook;
+        }
+
         return Arr::filter([
             'openapi' => $this->openapi,
             'info' => $this->info,
             'servers' => $this->servers,
             'paths' => $paths ?: null,
+            'webhooks' => $webhooks ?: null,
             'components' => $this->components,
             'security' => $this->security,
             'tags' => $this->tags,
@@ -230,6 +260,7 @@ class OpenApi extends BaseObject
             ->info($properties['info'])
             ->servers(...($properties['servers'] ?? []))
             ->paths(...($properties['paths'] ?? []))
+            ->webhooks(...($properties['webhooks'] ?? []))
             ->components($properties['components'])
             ->security(...($properties['security'] ?? []))
             ->tags(...($properties['tags'] ?? []))

@@ -14,7 +14,7 @@ use GoldSpecDigital\ObjectOrientedOAS\Utilities\Arr;
  * @property mixed[]|null $enum
  * @property mixed|null $default
  * @property string|null $format
- * @property string|null $type
+ * @property string|string[]|null $type
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\Schema[]|null $items
  * @property int|null $maxItems
  * @property int|null $minItems
@@ -87,7 +87,7 @@ class Schema extends BaseObject implements SchemaContract
     protected $format;
 
     /**
-     * @var string|null
+     * @var string|string[]|null
      */
     protected $type;
 
@@ -336,14 +336,14 @@ class Schema extends BaseObject implements SchemaContract
     }
 
     /**
-     * @param string|null $type
+     * @param string[] $type
      * @return static
      */
-    public function type(?string $type): self
+    public function type(string ...$type): self
     {
         $instance = clone $this;
 
-        $instance->type = $type;
+        $instance->type = count($type) === 1 ? $type[0] : ($type ?: null);
 
         return $instance;
     }
@@ -755,7 +755,7 @@ class Schema extends BaseObject implements SchemaContract
             'enum' => $this->enum,
             'default' => $this->default,
             'format' => $this->format,
-            'type' => $this->type,
+            'type' => $this->type ?: null,
             'items' => $this->items,
             'maxItems' => $this->maxItems,
             'minItems' => $this->minItems,
@@ -792,7 +792,7 @@ class Schema extends BaseObject implements SchemaContract
             ->enum(...($properties['enum'] ?? []))
             ->default($properties['default'])
             ->format($properties['format'])
-            ->type($properties['type'])
+            ->type(...Arr::filter(Arr::wrap($properties['type'])))
             ->items($properties['items'])
             ->maxItems($properties['maxItems'])
             ->minItems($properties['minItems'])

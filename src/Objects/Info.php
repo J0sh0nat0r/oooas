@@ -8,6 +8,7 @@ use GoldSpecDigital\ObjectOrientedOAS\Utilities\Arr;
 
 /**
  * @property string|null $title
+ * @property string|null $summary
  * @property string|null $description
  * @property string|null $termsOfService
  * @property \GoldSpecDigital\ObjectOrientedOAS\Objects\Contact|null $contact
@@ -20,6 +21,11 @@ class Info extends BaseObject
      * @var string|null
      */
     protected $title;
+
+    /**
+     * @var string|null
+     */
+    protected $summary;
 
     /**
      * @var string|null
@@ -55,6 +61,19 @@ class Info extends BaseObject
         $instance = clone $this;
 
         $instance->title = $title;
+
+        return $instance;
+    }
+
+    /**
+     * @param string|null $summary
+     * @return static
+     */
+    public function summary(?string $summary): self
+    {
+        $instance = clone $this;
+
+        $instance->summary = $summary;
 
         return $instance;
     }
@@ -131,6 +150,7 @@ class Info extends BaseObject
     {
         return Arr::filter([
             'title' => $this->title,
+            'summary' => $this->summary,
             'description' => $this->description,
             'termsOfService' => $this->termsOfService,
             'contact' => $this->contact,
@@ -143,6 +163,7 @@ class Info extends BaseObject
     {
         return parent::__set_state($properties)
             ->title($properties['title'])
+            ->summary($properties['summary'])
             ->description($properties['description'])
             ->termsOfService($properties['termsOfService'])
             ->contact($properties['contact'])

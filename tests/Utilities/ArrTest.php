@@ -36,4 +36,32 @@ class ArrTest extends TestCase
         $this->assertArrayHasKey('string', $array);
         $this->assertArrayHasKey('object', $array);
     }
+
+    /** @test */
+    public function arrays_are_not_wrapped()
+    {
+        $array = [false, 0, 'string', OpenApi::create()];
+
+        $wrapped = Arr::wrap($array);
+
+        $this->assertSame($array, $wrapped);
+    }
+
+    public function non_array_are_wrapped()
+    {
+        $bool = false;
+        $number = 0;
+        $string = 'string';
+        $object = OpenApi::create();
+
+        $boolArr = Arr::wrap($bool);
+        $numberArr = Arr::wrap($number);
+        $stringArr = Arr::wrap($string);
+        $objectArr = Arr::wrap($object);
+
+        $this->assertSame([false], $boolArr);
+        $this->assertSame([0], $numberArr);
+        $this->assertSame(['string'], $stringArr);
+        $this->assertSame([$object], $objectArr);
+    }
 }
